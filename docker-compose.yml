@@ -1,0 +1,40 @@
+networks:
+  internal:
+    name: igt_local_internal
+
+services:
+  frontend:
+    container_name: igt_local_front
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile
+    image: igt_local_front
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - internal
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+
+  backend:
+    container_name: igt_local_back
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+    image: igt_local_back
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+    networks:
+      - internal
+    environment:
+      ENV: development
+    ports:
+      - "8000:8000"
